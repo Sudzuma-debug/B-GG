@@ -1,6 +1,12 @@
 import cors from 'cors'
 import express from 'express'
 import 'dotenv/config'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+// Настройка путей для работы с модулями ES
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 const PORT = Number(process.env.PORT) || 3001
@@ -9,6 +15,8 @@ const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID
 
 app.use(cors())
 app.use(express.json())
+
+// --- ТВОИ API РОУТЫ ---
 
 app.get('/api/health', (_req, res) => {
   res.json({
@@ -87,6 +95,16 @@ app.post('/api/book', async (req, res) => {
     const message = error instanceof Error ? error.message : 'Ошибка сервера'
     res.status(500).json({ ok: false, error: message })
   }
+})
+
+// --- РАЗДАЧА ФРОНТЕНДА (Исправляет ошибку Cannot GET /) ---
+
+// 1. Указываем серверу раздавать статику из папки dist (твой собранный Vite проект)
+app.use(express.static(path.join(__dirname, '../dist')))
+
+// 2. Если запрос не попал в API (например, обычный заход на сайт), отдаем главную страницу
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'))
 })
 
 app.listen(PORT, () => {
