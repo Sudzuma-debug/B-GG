@@ -4,7 +4,7 @@ services:
     name: mini-app-api
     runtime: node
     plan: free
-    buildCommand:npm install && npm run build
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: BOT_TOKEN
